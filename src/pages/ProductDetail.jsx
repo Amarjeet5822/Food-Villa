@@ -10,16 +10,11 @@ function ProductDetail() {
   console.log("recipe", recipe);
   useEffect(() => {
     if (recipe && recipe.length > 0 && id) {  // Ensure id is valid
-      console.log("Raw id:", id);
       const numericId = parseInt(id, 10); // Safer number conversion
-      console.log("Converted id:", numericId);
-      
       const product = recipe.find((item) => {
-        console.log("Comparing:", numericId, "with", item.id);
         return item.id === numericId;
       });
   
-      console.log("Matched product:", product);
       setItem(product);
     }
   }, [id, recipe]);
