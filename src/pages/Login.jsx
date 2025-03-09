@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { api_url } from "../utils/backend_api";
 
 function Login() {
   const [ isField, setIsField] = useState(true);
@@ -6,7 +7,7 @@ function Login() {
   const [password, setPassword] = useState("");
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:8082/auth/google";
+    window.location.href = `${api_url}/auth/google`;
     localStorage.setItem("isLogged", true);
   };
   useEffect(() => {
