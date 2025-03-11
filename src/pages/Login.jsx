@@ -1,31 +1,53 @@
 import { useEffect, useState } from "react";
 import { api_url } from "../utils/backend_api";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
-  const [ isField, setIsField] = useState(true);
+  const [isField, setIsField] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleGoogleLogin = () => {
     window.location.href = `${api_url}/auth/google`;
-    localStorage.setItem("isLogged", true);
   };
-  useEffect(() => {
-    if(password.length>4 && email) {
-      setIsField(false)
+
+  const handleEmailLogin = async (e) => {
+    e.preventDefault();
+    try {
+      // Add your email/password login logic here if needed
+      // For now, we'll just redirect after Google auth
+    } catch (error) {
+      console.error('Login error:', error);
     }
-  }, [email, password])
-  
+  };
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await axios.get(`${api_url}/api/auth/status`, { withCredentials: true });
+        if (response.data.isAuthenticated) {
+          navigate('/');
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error);
+      }
+    };
+    checkAuth();
+
+    if (password.length > 4 && email) {
+      setIsField(false);
+    }
+  }, [email, password, navigate]);
+
   return (
-    <>
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white pt-3 pb-8 px-8  rounded-lg shadow-md w-full max-w-md">
+      <div className="bg-white pt-3 pb-8 px-8 rounded-lg shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
-        <form>
+        <form onSubmit={handleEmailLogin}>
           <div className="mb-4">
-            <label className="block text-gray-700 mb-2" htmlFor="email">
-              Email
-            </label>
+            <label className="block text-gray-700 mb-2" htmlFor="email">Email</label>
             <input
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -36,9 +58,7 @@ function Login() {
             />
           </div>
           <div className="mb-6">
-            <label className="block text-gray-700 mb-2" htmlFor="password">
-              Password
-            </label>
+            <label className="block text-gray-700 mb-2" htmlFor="password">Password</label>
             <input
               onChange={(e) => setPassword(e.target.value)}
               type="password"
@@ -51,7 +71,7 @@ function Login() {
           <button
             type="submit"
             disabled={isField}
-            className={`w-full ${ !isField ? "bg-blue-500 hover:bg-blue-600" : "bg-blue-100"} text-white py-2 rounded-lg  transition duration-300` }
+            className={`w-full ${!isField ? "bg-blue-500 hover:bg-blue-600" : "bg-blue-100"} text-white py-2 rounded-lg transition duration-300`}
           >
             Login
           </button>
@@ -59,7 +79,7 @@ function Login() {
         <div className="mt-6 text-center">
           <p className="text-gray-600 text-2xl">OR</p>
           <button
-            className="mt-4 w-full text-red-700 font-bold text-xl hover:bg-gray-200 py-2 rounded-lg  transition duration-300"
+            className="mt-4 w-full text-red-700 font-bold text-xl hover:bg-gray-200 py-2 rounded-lg transition duration-300"
             onClick={handleGoogleLogin}
           >
             Login with Google
@@ -67,7 +87,6 @@ function Login() {
         </div>
       </div>
     </div>
-    </>
   );
 }
 

@@ -9,8 +9,7 @@ import Home from "./pages/Home.jsx";
 import WishCart from "./pages/WishCart.jsx";
 import RecipeContextProviderComponent from "./context/RecipeContextComponent.jsx";
 import ProductDetail from "./pages/ProductDetail.jsx";
-
-
+import SavedRecipeProviderComponent from "./context/SavedRecipeComponent.jsx";
 
 const router = createBrowserRouter([
   {
@@ -28,8 +27,10 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RecipeContextProviderComponent>
-      <RouterProvider router={router} />
-    </RecipeContextProviderComponent>
+    <SavedRecipeProviderComponent>
+      <RecipeContextProviderComponent>
+        <RouterProvider router={router} />
+      </RecipeContextProviderComponent>
+    </SavedRecipeProviderComponent>
   </StrictMode>
 );
