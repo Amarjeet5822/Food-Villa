@@ -27,7 +27,7 @@ function Home() {
               <div
                 key={item.id}
                 onClick={() => handleProductClick(item.id)}
-                className="w-full sm:w-72 bg-white border cursor-pointer border-gray-200 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                className="w-full sm:w-72 bg-white border cursor-pointer border-gray-200 rounded-xl shadow-md overflow-hidden hover:shadow-lg  duration-300 transition-transform  hover:scale-105"
               >
                 <img
                   src={item.image}

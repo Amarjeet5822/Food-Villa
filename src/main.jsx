@@ -10,6 +10,7 @@ import WishCart from "./pages/WishCart.jsx";
 import RecipeContextProviderComponent from "./context/RecipeContextComponent.jsx";
 import ProductDetail from "./pages/ProductDetail.jsx";
 import SavedRecipeProviderComponent from "./context/SavedRecipeComponent.jsx";
+import GoogleCallback from "./pages/GoogleCallback.jsx";
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,7 @@ const router = createBrowserRouter([
       { path: "/login", element: <Login /> },
       { path: "/cart", element: <WishCart /> },
       { path: "/product/:id", element: <ProductDetail /> },
+      { path: "/auth/google/callback", element: <GoogleCallback />}
     ],
   },
 ]);

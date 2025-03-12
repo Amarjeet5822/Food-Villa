@@ -1,1 +1,1 @@
-export const api_url = "https://food-vvilla.onrender.com"
+export const api_url = "http://localhost:8082"

@@ -55,16 +55,18 @@ function Navbar() {
   const handleLogout = () => {
     const token = localStorage.getItem('token');
     console.log('Logging out, clearing token:', token); // Log token before clearing
-    localStorage.removeItem('token');
+    localStorage.removeItem('isLogged');
     setIsLogged(false);
     window.location.href = "/";
   };
 
   useEffect(() => {
+    setIsLogged(localStorage.getItem("isLogged") || false)
     if (searchQuery.trim() === "") {
       getAllRecipe();
     }
-  }, [searchQuery]);
+
+  }, [searchQuery, isLogged]);
 
   return (
     <div className="max-w-6xl mx-auto w-full h-[80px] flex justify-between sticky top-0 z-10 bg-stone-300 text-white rounded-xl mb-5">
