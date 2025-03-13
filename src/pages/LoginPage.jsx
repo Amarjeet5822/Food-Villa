@@ -1,42 +1,29 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { api_url } from "../utils/backend_api";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import AuthContext from "../context/AuthContext";
 
-function Login() {
+function LoginPage() {
   const [isField, setIsField] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-
+  const {LOGIN } = useContext(AuthContext);
   const handleGoogleLogin = () => {
     window.location.href = `${api_url}/auth/google`;
   };
 
   const handleEmailLogin = async (e) => {
     e.preventDefault();
-    try {
-      // Add your email/password login logic here if needed
-      // For now, we'll just redirect after Google auth
-    } catch (error) {
-      console.error('Login error:', error);
-    }
+    LOGIN(email, password);
+    setEmail("");
+    setPassword("")
+    isFisetIsFieldeld(true)
   };
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await axios.get(`${api_url}/api/auth/status`, { withCredentials: true });
-        if (response.data.isAuthenticated) {
-          navigate('/');
-        }
-      } catch (error) {
-        console.error('Auth check failed:', error);
-      }
-    };
-    checkAuth();
 
-    if (password.length > 4 && email) {
+    if (password.length > 3 && email) {
       setIsField(false);
     }
   }, [email, password, navigate]);
@@ -44,7 +31,7 @@ function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white pt-3 pb-8 px-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">Login Please</h2>
         <form onSubmit={handleEmailLogin}>
           <div className="mb-4">
             <label className="block text-gray-700 mb-2" htmlFor="email">Email</label>
@@ -85,9 +72,13 @@ function Login() {
             Login with Google
           </button>
         </div>
+        <div className="flex gap-1 justify-center items-center">
+          <p>{`Don't have Account? `} </p>
+          <NavLink className={"text-red-500 font-bold"} to="/login/signup">Signup</NavLink>
+        </div>
       </div>
     </div>
   );
 }
 
-export default Login;
+export default LoginPage;

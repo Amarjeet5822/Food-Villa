@@ -1,10 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import AuthContext from "../context/AuthContext";
+
 
 function GoogleCallback() {
+  const { setIsAuthenticated } = useContext(AuthContext)
   const navigate = useNavigate();
   useEffect(() => {
-    localStorage.setItem("isLogged", true);
+    setIsAuthenticated(true)
     navigate("/");
   }, []);
   return <div></div>;

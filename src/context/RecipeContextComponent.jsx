@@ -6,46 +6,30 @@ import RecipeContext from "./RecipeContext";
 const RecipeContextProviderComponent = ( { children}) => {
   const [recipe, setRecipe ] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
 
   const searchedRecipe = async (searchQuery) => {
     setLoading(true);
-    setError(null);
-    setSuccess(false);
     try {
-      const response = await axios.get(`${api_url}/api/recipes/search?query=${searchQuery}` )
+      const response = await axios.get(`${api_url}/api/recipes/search?query=${searchQuery}`, { withCredentials: true } )
       // console.log("searchedQuery Data :" , response.data);
       setLoading(false);
       setRecipe(response.data);
-      setSuccess(true);
-      setError(null);
     } catch (error) {
       setLoading(false);
-      setSuccess(false);
-      setError(error?.message);
-      // console.log(error, error?.message)
     }
   }
 
   const getAllRecipe = async () => {
 
-    setError(null);
     setLoading(true);
-    setSuccess(false);
     try {
 
-      const response = await axios.get(`${api_url}/api/recipes`)
+      const response = await axios.get(`${api_url}/api/recipes`, { withCredentials: true })
       setLoading(false)
-      setError(null);
-      setSuccess(true);
       setRecipe(response.data);
-      console.log("getRecipes Data :" , response.data);
+      // console.log("getRecipes Data :" , response.data);
     } catch (error) {
-      setError(error?.message);
       setLoading(false);
-      setSuccess(false);
-      console.log(error, error.message);
     }
   }
   useEffect(() => {
@@ -53,7 +37,7 @@ const RecipeContextProviderComponent = ( { children}) => {
   }, [])
 
   return (
-    <RecipeContext.Provider value={{ recipe, setLoading, setRecipe, setError, setSuccess , searchedRecipe, loading, error, success, getAllRecipe }}>
+    <RecipeContext.Provider value={{ recipe, setLoading, setRecipe, searchedRecipe, loading,  getAllRecipe }}>
       { children }
     </RecipeContext.Provider>
   )

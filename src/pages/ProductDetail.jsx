@@ -1,10 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import RecipeContext from "../context/RecipeContext";
+import AuthContext from "../context/AuthContext";
+import SavedRecipeContext from "../context/SavedRecipeContext";
 
 function ProductDetail() {
   const [item, setItem] = useState(null);
   const { recipe } = useContext(RecipeContext);
+  const { isAuthenticated } = useContext(AuthContext);
+  const { SaveRecipeWishList } = useContext(SavedRecipeContext)
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -17,9 +21,17 @@ function ProductDetail() {
     }
   }, [id, recipe]);
 
-  const handleAddToCart = () => {
-    console.log("Added to cart:", item);
-    alert(`${item?.title} has been added to your cart!`);
+  const handleAddToCart = async (item) => {
+    if(!isAuthenticated) {
+      return navigate("/login")
+    }
+    try {
+      const {image, title, readyInMinutes, vegetarian, id } = item || {};
+      await SaveRecipeWishList({ image, title, readyInMinutes, vegetarian, id });
+      alert("Product added")
+    } catch (error) {
+      console.log("here I have to show toast.", error)
+    }
   };
 
   const handleBackToHome = () => {
@@ -95,7 +107,7 @@ function ProductDetail() {
             {/* Buttons */}
             <div className="flex justify-around mt-6">
               <button
-                onClick={handleAddToCart}
+                onClick={() => handleAddToCart(item)}
                 className="bg-blue-600 text-white text-lg py-2 px-6 rounded-lg hover:bg-blue-700 transition"
               >
                 Add to WishList

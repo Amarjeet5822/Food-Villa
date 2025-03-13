@@ -11,7 +11,7 @@ function Home() {
   };
 
   if (loading) {
-    return <div className="text-2xl text-center">Loading...</div>;
+    return <div className="text-2xl min-h-screen text-center">Loading...</div>;
   }
 
   return (

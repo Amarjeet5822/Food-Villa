@@ -2,46 +2,16 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import RecipeContext from "../../context/RecipeContext";
 import { BsBagHeart } from "react-icons/bs";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { RiLogoutCircleLine } from "react-icons/ri";
 import { AiOutlineLogin } from "react-icons/ai";
-import { api_url } from "../../utils/backend_api";
-import axios from "axios";
+import AuthContext from "../../context/AuthContext";
 
 function Navbar() {
-  const [isLogged, setIsLogged] = useState(false);
+  const { LOGOUT, isAuthenticated} = useContext(AuthContext)
   const [searchQuery, setSearchQuery] = useState("");
   const searchRef = useRef(null);
   const { searchedRecipe, getAllRecipe } = useContext(RecipeContext);
-  const location = useLocation();
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(location.search);
-    const token = urlParams.get('token');
-    if (token) {
-      console.log('Token from URL:', token); // Log token from redirect
-      localStorage.setItem('token', token);
-      setIsLogged(true);
-      window.history.replaceState({}, document.title, "/");
-    }
-
-    const storedToken = localStorage.getItem('token');
-    if (storedToken) {
-      console.log('Stored Token from localStorage:', storedToken); // Log stored token
-      axios.get(`${api_url}/api/auth/status`, {
-        headers: { Authorization: `Bearer ${storedToken}` }
-      })
-        .then(response => {
-          console.log('Auth Status Response:', response.data);
-          setIsLogged(response.data.isAuthenticated);
-        })
-        .catch(error => {
-          console.error('Auth Check Error:', error);
-          setIsLogged(false);
-          localStorage.removeItem('token');
-        });
-    }
-  }, [location]);
 
   const handlerSearch = (query) => {
     if (searchRef.current) {
@@ -52,21 +22,22 @@ function Navbar() {
     }, 500);
   };
 
-  const handleLogout = () => {
-    const token = localStorage.getItem('token');
-    console.log('Logging out, clearing token:', token); // Log token before clearing
-    localStorage.removeItem('isLogged');
-    setIsLogged(false);
-    window.location.href = "/";
+  const handleLogout = async () => {
+    try {
+      await LOGOUT(); // Wait for the logout request to complete
+      window.location.href = "/"; // Redirect after successful logout
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
   };
+  
 
   useEffect(() => {
-    setIsLogged(localStorage.getItem("isLogged") || false)
     if (searchQuery.trim() === "") {
       getAllRecipe();
     }
 
-  }, [searchQuery, isLogged]);
+  }, [searchQuery, isAuthenticated]);
 
   return (
     <div className="max-w-6xl mx-auto w-full h-[80px] flex justify-between sticky top-0 z-10 bg-stone-300 text-white rounded-xl mb-5">
@@ -90,7 +61,7 @@ function Navbar() {
         </div>
         <div className="flex justify-center items-center gap-2.5 text-stone-700 pr-4 text-3xl mt-4">
           <div className="transition-transform duration-500 hover:scale-125">
-            {isLogged ? (
+            {isAuthenticated ? (
               <button onClick={handleLogout}><RiLogoutCircleLine /></button>
             ) : (
               <NavLink to="/login">
@@ -98,7 +69,7 @@ function Navbar() {
               </NavLink>
             )}
           </div>
-          {isLogged && (
+          {isAuthenticated && (
             <div className="transition-transform duration-500 hover:scale-125">
               <NavLink to="/cart"><button><BsBagHeart /></button></NavLink>
             </div>
