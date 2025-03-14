@@ -7,22 +7,26 @@ function LoginPage() {
   const [isField, setIsField] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { LOGIN, setIsAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
-  const {LOGIN } = useContext(AuthContext);
   const handleGoogleLogin = () => {
     window.location.href = `${api_url}/auth/google`;
   };
 
   const handleEmailLogin = async (e) => {
     e.preventDefault();
-    LOGIN(email, password);
-    setEmail("");
-    setPassword("")
-    isFisetIsFieldeld(true)
+    try {
+      await LOGIN(email, password);
+      setEmail("");
+      setPassword("");
+      setIsField(true);
+      setIsAuthenticated(true);
+    } catch (error) {
+      // console.log("error");
+    }
   };
 
   useEffect(() => {
-
     if (password.length > 3 && email) {
       setIsField(false);
     }
@@ -34,7 +38,9 @@ function LoginPage() {
         <h2 className="text-2xl font-bold mb-4 text-center">Login Please</h2>
         <form onSubmit={handleEmailLogin}>
           <div className="mb-4">
-            <label className="block text-gray-700 mb-2" htmlFor="email">Email</label>
+            <label className="block text-gray-700 mb-2" htmlFor="email">
+              Email
+            </label>
             <input
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -45,7 +51,9 @@ function LoginPage() {
             />
           </div>
           <div className="mb-6">
-            <label className="block text-gray-700 mb-2" htmlFor="password">Password</label>
+            <label className="block text-gray-700 mb-2" htmlFor="password">
+              Password
+            </label>
             <input
               onChange={(e) => setPassword(e.target.value)}
               type="password"
@@ -58,7 +66,9 @@ function LoginPage() {
           <button
             type="submit"
             disabled={isField}
-            className={`w-full ${!isField ? "bg-blue-500 hover:bg-blue-600" : "bg-blue-100"} text-white py-2 rounded-lg transition duration-300`}
+            className={`w-full ${
+              !isField ? "bg-blue-500 hover:bg-blue-600" : "bg-blue-100"
+            } text-white py-2 rounded-lg transition duration-300`}
           >
             Login
           </button>
@@ -74,7 +84,9 @@ function LoginPage() {
         </div>
         <div className="flex gap-1 justify-center items-center">
           <p>{`Don't have Account? `} </p>
-          <NavLink className={"text-red-500 font-bold"} to="/login/signup">Signup</NavLink>
+          <NavLink className={"text-red-500 font-bold"} to="/login/signup">
+            Signup
+          </NavLink>
         </div>
       </div>
     </div>

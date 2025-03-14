@@ -1,48 +1,80 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import RecipeContext from "../context/RecipeContext";
 import AuthContext from "../context/AuthContext";
 import SavedRecipeContext from "../context/SavedRecipeContext";
+import { Bounce, toast, ToastContainer } from "react-toastify";
 
 function ProductDetail() {
   const [item, setItem] = useState(null);
+  const [loading, setLoading] = useState(false);
   const { recipe } = useContext(RecipeContext);
   const { isAuthenticated } = useContext(AuthContext);
-  const { SaveRecipeWishList } = useContext(SavedRecipeContext)
-  const { id } = useParams();
+  const { SaveRecipeWishList, error, message, setError, setMessage } =
+    useContext(SavedRecipeContext);
+  const { id, imageId } = useParams();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (recipe && recipe.length > 0 && id) {
-      const numericId = parseInt(id, 10); // Ensure id is a number
-      const product = recipe.find((item) => item.id === numericId);
-      setItem(product);
-      console.log("product :", product);
-    }
-  }, [id, recipe]);
+  const NotifyError = (data) => toast.error(data);
+  const NotifyMessage = (data) => toast.success(data);
 
-  const handleAddToCart = async (item) => {
-    if(!isAuthenticated) {
-      return navigate("/login")
-    }
-    try {
-      const {image, title, readyInMinutes, vegetarian, id } = item || {};
-      await SaveRecipeWishList({ image, title, readyInMinutes, vegetarian, id });
-      alert("Product added")
-    } catch (error) {
-      console.log("here I have to show toast.", error)
-    }
-  };
+  const handleAddToCart = useCallback(
+    async (item) => {
+      if (!isAuthenticated) {
+        NotifyError("Login First, Unable to add Product");
+        return;
+      }
+      if (loading) return; // Prevent duplicate clicks
+      setLoading(true);
+      try {
+        const { image, title, readyInMinutes, vegetarian, id } = item || {};
+        await SaveRecipeWishList({
+          image,
+          title,
+          readyInMinutes,
+          vegetarian,
+          id,
+        });
+      } catch (err) {
+        NotifyError("something went wrong!!");
+        // console.log(err.message);
+      }finally {
+        setLoading(false);
+      }
+    },[isAuthenticated, SaveRecipeWishList, loading]
+  );
 
   const handleBackToHome = () => {
     navigate("/");
   };
-
+  // Handle notifications
+  useEffect(() => {
+    if (message) {
+      NotifyMessage(message);
+      setMessage(null);
+    } else if (error) {
+      NotifyError(error);
+      setError(null);
+    }
+  }, [message, error]);
+  useEffect(() => {
+    if (recipe && recipe.length > 0 && id) {
+      const numericId = parseInt(id, 10); // Ensure id is a number
+      const numericImageId = parseInt(imageId, 10);
+      const product = recipe.find(
+        (item) => item.id === numericId || item.imageId === numericImageId
+      );
+      setItem(product);
+      // console.log("product :", product);
+    }
+  }, [id, recipe]);
   return (
     <div className="max-w-6xl flex justify-center items-center p-5 rounded-2xl">
       <div>
         {!item ? (
-          <div className="w-full text-xl">Loading....</div>
+          <div className="w-full text-xl text-center max-h-screen">
+            Loading....
+          </div>
         ) : (
           <div className="w-full flex flex-col gap-4 p-4 bg-gray-50 rounded-2xl">
             <div>
@@ -108,10 +140,16 @@ function ProductDetail() {
             <div className="flex justify-around mt-6">
               <button
                 onClick={() => handleAddToCart(item)}
-                className="bg-blue-600 text-white text-lg py-2 px-6 rounded-lg hover:bg-blue-700 transition"
+                disabled={loading}
+                className={`bg-blue-500 text-white text-lg py-2 px-6 rounded-lg transition ${
+                  loading
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-blue-700"
+                }`}
               >
-                Add to WishList
+                {loading ? "Adding..." : "Add to WishList"}
               </button>
+
               <button
                 onClick={handleBackToHome}
                 className="bg-gray-600 text-white text-lg py-2 px-6 rounded-lg hover:bg-gray-700 transition"
@@ -122,6 +160,19 @@ function ProductDetail() {
           </div>
         )}
       </div>
+      <ToastContainer
+        position="top-center"
+        autoClose={1000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        pauseOnFocusLoss={false}
+        rtl={false}
+        draggable
+        pauseOnHover={false}
+        theme="colored"
+        transition={Bounce}
+      />
     </div>
   );
 }

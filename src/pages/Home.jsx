@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import RecipeContext from "../context/RecipeContext";
 import { useNavigate } from "react-router-dom";
 
+
 function Home() {
   const navigate = useNavigate();
   const { recipe, loading } = useContext(RecipeContext);
@@ -13,7 +14,6 @@ function Home() {
   if (loading) {
     return <div className="text-2xl min-h-screen text-center">Loading...</div>;
   }
-
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-5 rounded-2xl">
       <div className="max-w-6xl w-full bg-white shadow-lg rounded-2xl p-8">

@@ -1,34 +1,35 @@
 import { useContext, useState } from "react";
 import AuthContext from "../context/AuthContext";
-import { NavLink } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import {  NavLink } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 
 function SingupPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const { SIGNUP } = useContext(AuthContext);
-
-  const formHandler = (event) => {
+  const notify = (data) => toast(data)
+  const formHandler = async (event) => {
     event.preventDefault();
     if (!name || !email || !pass) {
       notify("missing field");
       return;
     }
-    SIGNUP({ name, email, pass });
-    setEmail("");
-    setName("");
-    setPass("");
+    try {
+      await SIGNUP({ name, email, pass });
+      setEmail("");
+      setName("");
+      setPass("");
+    } catch (error) {}
   };
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <ToastContainer />
+      <ToastContainer autoClose={1500} />
       <div className="bg-white pt-3 pb-8 px-8 rounded-lg shadow-md w-full max-w-md">
         <form
           onSubmit={formHandler}
           className="flex flex-col justify-center items-center px-2 pt-5"
         >
-
           <div className="bg-white  rounded-lg px-6 py-6 w-full max-w-sm">
             <p className="text-2xl font-semibold text-center text-gray-800 pb-4">
               Signup Please

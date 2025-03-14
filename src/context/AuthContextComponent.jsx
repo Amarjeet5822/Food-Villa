@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AuthContext from "./AuthContext";
 import axios from "axios";
@@ -9,14 +8,8 @@ import { useNavigate } from "react-router-dom";
 const AuthContextComponent = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
-  // Helper to show toast messages
-  const showToast = (type, message) => {
-    if (type === "success") {
-      toast.success(message);
-    } else if (type === "error") {
-      toast.error(message);
-    }
-  };
+
+  // Signup logic
   const SIGNUP = async (email, password, name) => {
     try {
       const res = await axios.post(
@@ -24,12 +17,9 @@ const AuthContextComponent = ({ children }) => {
         { email, password, name },
         { withCredentials: true }
       );
-      showToast(
-        "success",
-        res.data.message || "Signup successful! Please login."
-      );
+      navigate("/login");
     } catch (err) {
-      showToast("error", err.response?.data?.message || "Signup failed.");
+      // console.log(err)
     }
   };
   const LOGIN = async (email, password) => {
@@ -40,11 +30,9 @@ const AuthContextComponent = ({ children }) => {
         { withCredentials: true }
       );
       setIsAuthenticated(true);
-      showToast("success", res.data.message || "Login successful!");
       navigate("/");
     } catch (err) {
       setIsAuthenticated(false);
-      showToast("error", err.response?.data?.message || "Login failed.");
     }
   };
   const LOGOUT = async () => {
@@ -55,9 +43,8 @@ const AuthContextComponent = ({ children }) => {
         { withCredentials: true }
       );
       setIsAuthenticated(false);
-      showToast("success", res.data.message || "Logout successful!");
     } catch (err) {
-      showToast("error", err.response?.data?.message || "Logout failed.");
+      // console.log(err.message)
     }
   };
   // CHECK AUTH STATUS
@@ -67,12 +54,7 @@ const AuthContextComponent = ({ children }) => {
         withCredentials: true,
       });
       setIsAuthenticated(res.data.isAuthenticated || false);
-    } catch (err) {
-      console.error(
-        "Error checking auth status:",
-        err.response?.data?.message || err.message
-      );
-    }
+    } catch (err) {}
   };
 
   useEffect(() => {
