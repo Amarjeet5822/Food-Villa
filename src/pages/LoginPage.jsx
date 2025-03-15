@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { api_url } from "../utils/backend_api";
 import { NavLink, useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
@@ -9,6 +9,7 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const { LOGIN, setIsAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
+  const emailRef = useRef(null);
   const handleGoogleLogin = () => {
     window.location.href = `${api_url}/auth/google`;
   };
@@ -25,7 +26,9 @@ function LoginPage() {
       // console.log("error");
     }
   };
-
+  useEffect(() => {
+    emailRef.current?.focus();
+  }, []);
   useEffect(() => {
     if (password.length > 3 && email) {
       setIsField(false);
@@ -33,7 +36,7 @@ function LoginPage() {
   }, [email, password, navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center rounded-lg bg-gray-100">
       <div className="bg-white pt-3 pb-8 px-8 rounded-lg shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold mb-4 text-center">Login Please</h2>
         <form onSubmit={handleEmailLogin}>
@@ -42,6 +45,7 @@ function LoginPage() {
               Email
             </label>
             <input
+              ref={emailRef}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               type="email"
@@ -73,16 +77,27 @@ function LoginPage() {
             Login
           </button>
         </form>
-        <div className="mt-6 text-center">
-          <p className="text-gray-600 text-2xl">OR</p>
-          <button
-            className="mt-4 w-full text-red-700 font-bold text-xl hover:bg-gray-200 py-2 rounded-lg transition duration-300"
-            onClick={handleGoogleLogin}
-          >
-            Login with Google
-          </button>
+        <div className="mt-4 text-center">
+          <p className="text-gray-600 text-xl my-2">OR</p>
+          <div className="flex justify-center items-center w-full bg-gray-100 rounded-xl hover:bg-gray-200">
+            <div>
+              <button
+                onClick={handleGoogleLogin}
+                className="flex justify-center items-center gap-2  px-4 py-1 rounded-lg"
+              >
+                <div className=" text-xl text-gray-500 pb-1.5">Login with </div>
+                <div>
+                  <img
+                    src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png"
+                    alt="Google"
+                    className="w-16 h-5"
+                  />
+                </div>
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="flex gap-1 justify-center items-center">
+        <div className="flex gap-1 mt-2 justify-center items-center">
           <p>{`Don't have Account? `} </p>
           <NavLink className={"text-red-500 font-bold"} to="/login/signup">
             Signup
