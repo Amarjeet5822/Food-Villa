@@ -1,16 +1,25 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import RecipeContext from "../context/RecipeContext";
 import { useNavigate } from "react-router-dom";
 
 
 function Home() {
+  const [currentPage, setCurrentPage] = useState(localStorage.getItem("currentPage") ? Number(localStorage.getItem("currentPage")) : 1);
+  const  [totalPages, setTotalPages ] = useState(7)
   const navigate = useNavigate();
-  const { recipe, loading } = useContext(RecipeContext);
-
+  const { recipe, loading, getAllRecipe } = useContext(RecipeContext);
   const handleProductClick = (id) => {
     navigate(`/product/${id}`);
   };
-
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      localStorage.setItem("currentPage", newPage);
+    }
+  };
+  useEffect(() => {
+     getAllRecipe(currentPage);
+  }, [currentPage]);
   if (loading) {
     return <div className="text-2xl min-h-screen text-center">Loading...</div>;
   }
@@ -20,7 +29,39 @@ function Home() {
         <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
           Recipes
         </h2>
-
+        <div className="flex justify-center items-center p-3 mb-4 border-2 border-gray-100 hover:border-gray-200 rounded-lg">
+          <button
+            className="px-3 py-1 border border-gray-300 rounded mx-1 text-gray-700 hover:bg-gray-200"
+            onClick={() => handlePageChange(1)}
+            disabled={currentPage === 1}
+          >
+            &laquo;
+          </button>
+          <button
+            className="px-3 py-1 border border-gray-300 rounded mx-1 text-gray-700 hover:bg-gray-200"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
+          <span className="mx-3 text-gray-600">
+            Page {currentPage} of { totalPages }
+          </span>
+          <button
+            className="px-3 py-1 border border-gray-300 rounded mx-1 text-gray-700 hover:bg-gray-200"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+          <button
+            className="px-3 py-1 border border-gray-300 rounded mx-1 text-gray-700 hover:bg-gray-200"
+            onClick={() => handlePageChange(totalPages)}
+            disabled={currentPage === totalPages}
+          >
+            &raquo;
+          </button>
+        </div>
         <div className="flex flex-wrap gap-4 justify-center">
           {Array.isArray(recipe) && recipe.length > 0 ? (
             recipe.map((item) => (

@@ -19,11 +19,11 @@ const RecipeContextProviderComponent = ( { children}) => {
     }
   }
 
-  const getAllRecipe = async () => {
+  const getAllRecipe = async (currentPage) => {
     setLoading(true);
     try {
 
-      const response = await axios.get(`${api_url}/api/recipes`, { withCredentials: true })
+      const response = await axios.get(`${api_url}/api/recipes?page=${currentPage}$limit=15`, { withCredentials: true })
       setLoading(false)
       setRecipe(response.data);
       // console.log("getRecipes Data :" , response.data);
