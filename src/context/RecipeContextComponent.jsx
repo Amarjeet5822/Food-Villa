@@ -31,10 +31,6 @@ const RecipeContextProviderComponent = ( { children}) => {
       setLoading(false);
     }
   }
-  useEffect(() => {
-    getAllRecipe();
-  }, [])
-
   return (
     <RecipeContext.Provider value={{ recipe, setLoading, setRecipe, searchedRecipe, loading,  getAllRecipe }}>
       { children }
